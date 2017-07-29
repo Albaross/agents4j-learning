@@ -7,8 +7,6 @@ package org.albaross.agents4j.learning.common;
  */
 public class Location3D implements Comparable<Location3D> {
 
-	public static final Location3D ORIGIN = new Location3D(0, 0, 0);
-
 	protected final int x;
 	protected final int y;
 	protected final int z;
