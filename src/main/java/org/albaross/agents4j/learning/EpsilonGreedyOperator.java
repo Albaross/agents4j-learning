@@ -10,11 +10,6 @@ import org.albaross.agents4j.core.common.OperationParam;
 @FunctionalInterface
 public interface EpsilonGreedyOperator<P, A> extends ActionOperator<P, A> {
 
-	@Override
-	default void process(OperationParam<P, A> param) {
-		ActionOperator.super.process(param);
-	}
-
 	default A generate(OperationParam<P, A> param) {
 		P perception = param.getPerception();
 
