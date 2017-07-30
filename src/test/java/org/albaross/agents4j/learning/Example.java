@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 import org.albaross.agents4j.core.common.BasicBuilder;
-import org.albaross.agents4j.learning.common.Constants;
 import org.albaross.agents4j.learning.common.Direction2D;
 import org.albaross.agents4j.learning.common.GridworldEnvironment;
 import org.albaross.agents4j.learning.common.Location2D;
@@ -31,7 +30,7 @@ public class Example {
 
 		GridworldEnvironment env = new GridworldEnvironment(
 				Arrays.asList(new RLWrapper<>(new BasicBuilder<Location2D, Direction2D>().add(policy).add(qTable).getAgent())), new HashMap<>(),
-				Constants.ORIGIN_2D, new Location2D(7, 0), 8, 6);
+				Location2D.ORIGIN_2D, new Location2D(7, 0), 8, 6);
 
 		for (int r = 0; r < 10000; r++) {
 			env.run();
