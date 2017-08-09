@@ -4,11 +4,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.albaross.agents4j.core.Agent;
+import org.albaross.agents4j.learning.MDPWrapper;
 import org.albaross.agents4j.learning.RLEnvironment;
+import org.deeplearning4j.rl4j.mdp.MDP;
+import org.deeplearning4j.rl4j.space.DiscreteSpace;
+import org.deeplearning4j.rl4j.space.ObservationSpace;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D> {
+public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D> implements MDPWrapper<Location2D, Direction2D> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GridworldEnvironment.class);
 
@@ -41,6 +46,62 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 			LOG.warn("unknown action");
 			return current;
 		}
+	}
+
+	protected final DiscreteSpace actions = new DiscreteSpace(4);
+	protected final ObservationSpace<Location2D> observations = new ObservationSpace<Location2D>() {
+
+		@Override
+		public String getName() {
+			return "Observations 2D";
+		}
+
+		@Override
+		public int[] getShape() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public INDArray getLow() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public INDArray getHigh() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	};
+
+	@Override
+	public ObservationSpace<Location2D> getObservationSpace() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DiscreteSpace getActionSpace() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MDP<Location2D, Integer, DiscreteSpace> newInstance() {
+		return new GridworldEnvironment(agents, rewards, start, goal, width, height);
+	}
+
+	@Override
+	public RLEnvironment<Location2D, Direction2D> env() {
+		return this;
+	}
+
+
+	@Override
+	public Direction2D decode(Integer action) {
+		return Direction2D.values()[action];
 	}
 
 }

@@ -21,14 +21,12 @@ public abstract class RLEnvironment<S, A> extends BasicEnvironment<S, A> {
 		this.start = start;
 		this.goal = goal;
 		this.rewards = rewards;
+		reboot();
 	}
 
-	@Override
-	public void run() {
+	public void reboot() {
 		for (int a = 0; a < currentState.length; a++)
 			currentState[a] = start;
-
-		super.run();
 	}
 
 	protected abstract S[] ara(int size);
@@ -44,6 +42,15 @@ public abstract class RLEnvironment<S, A> extends BasicEnvironment<S, A> {
 		S current = currentState[(int) agentId];
 		S next = nextState(current, action);
 
+		double reward = getReward(next);
+
+		currentState[(int) agentId] = next;
+		Agent<S, A> agent = agents.get((int) agentId);
+		if (agent instanceof ReinforcementLearner<?, ?>)
+			((ReinforcementLearner<S, A>) agent).update(current, action, reward, next);
+	}
+
+	protected double getReward(S next) {
 		double reward = -1;
 
 		if (!next.equals(goal)) {
@@ -53,10 +60,7 @@ public abstract class RLEnvironment<S, A> extends BasicEnvironment<S, A> {
 			reward = 0;
 		}
 
-		currentState[(int) agentId] = next;
-		Agent<S, A> agent = agents.get((int) agentId);
-		if (agent instanceof ReinforcementLearner<?, ?>)
-			((ReinforcementLearner<S, A>) agent).update(current, action, reward, next);
+		return reward;
 	}
 
 	public abstract S nextState(S current, A action);

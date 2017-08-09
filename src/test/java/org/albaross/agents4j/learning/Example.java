@@ -14,8 +14,9 @@ public class Example {
 	public static void main(String[] args) {
 		QTable<Location2D, Direction2D> qTable = new QTable<>();
 
-		final Random rnd = new Random(System.currentTimeMillis());
 		EpsilonGreedyOperator<Location2D, Direction2D> policy = () -> {
+			final Random rnd = new Random(System.currentTimeMillis());
+
 			switch (rnd.nextInt(4)) {
 			case 1:
 				return Direction2D.NORTH;

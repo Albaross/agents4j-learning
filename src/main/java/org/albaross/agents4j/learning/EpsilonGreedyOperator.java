@@ -23,7 +23,7 @@ public interface EpsilonGreedyOperator<P, A> extends ActionOperator<P, A> {
 	}
 
 	default double getExploreRate() {
-		return 0.1;
+		return 0.25;
 	}
 
 	A randomAction();
