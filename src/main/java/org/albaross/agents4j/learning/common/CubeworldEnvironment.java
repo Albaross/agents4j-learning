@@ -9,7 +9,6 @@ import org.albaross.agents4j.learning.RLEnvironment;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,19 +53,18 @@ public class CubeworldEnvironment extends RLEnvironment<Location3D, Direction3D>
 	}
 
 	protected final DiscreteSpace actions = new DiscreteSpace(6);
-	protected final ObservationSpace<Location3D> observations = new Obs
 
 	@Override
 	public DiscreteSpace getActionSpace() {
 		return actions;
 	}
-	
+
 	@Override
 	public ObservationSpace<Location3D> getObservationSpace() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public MDP<Location3D, Integer, DiscreteSpace> newInstance() {
 		return new CubeworldEnvironment(agents, rewards, start, goal, width, height, depth);
