@@ -2,11 +2,13 @@ package org.albaross.agents4j.learning;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Set;
  */
 public class QTable<S, A> implements ValueFunction<S, A> {
 
+	protected Random rnd = new Random();
 	protected Map<S, Map<A, Double>> map;
 	protected int size;
 
@@ -100,14 +103,18 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 		map.clear();
 	}
 
+	public Set<S> states() {
+		return map.keySet();
+	}
+
 	public Collection<Double> values(S state) {
 		Map<A, Double> tmp = map.get(state);
-		return (tmp != null) ? tmp.values() : new ArrayList<>();
+		return (tmp != null) ? tmp.values() : Collections.emptyList();
 	}
 
 	public Set<Entry<A, Double>> entrySet(S state) {
 		Map<A, Double> tmp = map.get(state);
-		return (tmp != null) ? tmp.entrySet() : new HashSet<>();
+		return (tmp != null) ? tmp.entrySet() : Collections.emptySet();
 	}
 
 	public double getMaxWeight(S state) {
@@ -127,17 +134,18 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 		if (!map.containsKey(state))
 			return null;
 
-		double maxWeight = -Double.MAX_VALUE;
-		A bestAction = null;
+		double maxWeight = getMaxWeight(state);
+		List<A> bestActions = new ArrayList<>();
 
 		for (Entry<A, Double> e : entrySet(state)) {
-			if (e.getValue() > maxWeight) {
-				bestAction = e.getKey();
-				maxWeight = e.getValue();
-			}
+			if (e.getValue() == maxWeight)
+				bestActions.add(e.getKey());
 		}
 
-		return bestAction;
+		if(bestActions.size() == 1)
+			return bestActions.get(0);
+		
+		return bestActions.get(rnd.nextInt(bestActions.size()));
 	}
 
 	@Override
