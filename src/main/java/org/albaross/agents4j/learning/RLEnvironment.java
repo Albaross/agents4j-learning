@@ -1,5 +1,6 @@
 package org.albaross.agents4j.learning;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +22,12 @@ public abstract class RLEnvironment<S, A> extends BasicEnvironment<S, A> {
 		this.start = start;
 		this.goal = goal;
 		this.rewards = rewards;
-		reboot();
 	}
 
+	@Override
 	public void reboot() {
-		for (int a = 0; a < currentState.length; a++)
-			currentState[a] = start;
+		super.reboot();
+		Arrays.fill(currentState, start);
 	}
 
 	protected abstract S[] ara(int size);
