@@ -9,7 +9,7 @@ import org.deeplearning4j.rl4j.space.Encodable;
  */
 public class Location3D implements Comparable<Location3D>, Encodable {
 
-	public static final Location3D ORIGIN_3D = new Location3D(0, 0, 0);
+	public static final Location3D ORIGIN_3D = new Location3D(1, 1, 1);
 
 	protected final int x;
 	protected final int y;
