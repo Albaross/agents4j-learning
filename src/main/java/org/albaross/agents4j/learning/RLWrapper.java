@@ -10,8 +10,8 @@ public class RLWrapper<S, A> implements Agent<S, A>, ReinforcementLearner<S, A> 
 	protected BasicAgent<S, A> agent;
 
 	public RLWrapper(BasicAgent<S, A> agent) {
-		if (agent.getComponent(QTable.class) == null)
-			throw new IllegalArgumentException("agent does not have a suitable q-function");
+		if (agent.getComponent(ValueFunction.class) == null)
+			throw new IllegalArgumentException("agent does not have a suitable value-function");
 
 		this.agent = Objects.requireNonNull(agent, "agent must not be null");
 	}
@@ -19,7 +19,7 @@ public class RLWrapper<S, A> implements Agent<S, A>, ReinforcementLearner<S, A> 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void update(S state, A action, double reward, S nextState) {
-		this.agent.getComponent(QTable.class).update(state, action, reward, nextState, 0.1, 0.9);
+		this.agent.getComponent(ValueFunction.class).update(state, action, reward, nextState);
 	}
 
 	@Override

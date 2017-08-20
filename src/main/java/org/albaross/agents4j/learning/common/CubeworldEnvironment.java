@@ -35,17 +35,17 @@ public class CubeworldEnvironment extends RLEnvironment<Location3D, Direction3D>
 	public Location3D nextState(Location3D current, Direction3D action) {
 		switch (action) {
 		case UP:
-			return current.y < height - 1 ? new Location3D(current.x, current.y + 1, current.z) : current;
+			return current.y < height ? new Location3D(current.x, current.y + 1, current.z) : current;
 		case DOWN:
-			return current.y > 0 ? new Location3D(current.x, current.y - 1, current.z) : current;
+			return current.y > 1 ? new Location3D(current.x, current.y - 1, current.z) : current;
 		case RIGHT:
-			return current.x < width - 1 ? new Location3D(current.x + 1, current.y, current.z) : current;
+			return current.x < width ? new Location3D(current.x + 1, current.y, current.z) : current;
 		case LEFT:
-			return current.x > 0 ? new Location3D(current.x - 1, current.y, current.z) : current;
+			return current.x > 1 ? new Location3D(current.x - 1, current.y, current.z) : current;
 		case BACK:
-			return current.z < depth - 1 ? new Location3D(current.x, current.y, current.z + 1) : current;
+			return current.z < depth ? new Location3D(current.x, current.y, current.z + 1) : current;
 		case FORTH:
-			return current.z > 0 ? new Location3D(current.x, current.y, current.z - 1) : current;
+			return current.z > 1 ? new Location3D(current.x, current.y, current.z - 1) : current;
 		default:
 			LOG.warn("unknown action");
 			return current;

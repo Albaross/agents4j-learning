@@ -1,5 +1,6 @@
 package org.albaross.agents4j.learning.common;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -35,13 +36,13 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 	public Location2D nextState(Location2D current, Direction2D action) {
 		switch (action) {
 		case NORTH:
-			return current.y < height - 1 ? new Location2D(current.x, current.y + 1) : current;
+			return current.y < height ? new Location2D(current.x, current.y + 1) : current;
 		case SOUTH:
-			return current.y > 0 ? new Location2D(current.x, current.y - 1) : current;
+			return current.y > 1 ? new Location2D(current.x, current.y - 1) : current;
 		case EAST:
-			return current.x < width - 1 ? new Location2D(current.x + 1, current.y) : current;
+			return current.x < width ? new Location2D(current.x + 1, current.y) : current;
 		case WEST:
-			return current.x > 0 ? new Location2D(current.x - 1, current.y) : current;
+			return current.x > 1 ? new Location2D(current.x - 1, current.y) : current;
 		default:
 			LOG.warn("unknown action");
 			return current;
@@ -98,10 +99,70 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 		return this;
 	}
 
-
 	@Override
 	public Direction2D decode(Integer action) {
 		return Direction2D.values()[action];
+	}
+
+	@Override
+	public String toString() {
+		if (grid == null)
+			initGrid();
+
+		byte[] tmp = new byte[grid.length];
+		System.arraycopy(grid, 0, tmp, 0, grid.length);
+		stamp(tmp, currentState[0], ' ', '=', ')', ' ');
+		return new String(tmp, StandardCharsets.UTF_8);
+	}
+
+	protected byte[] grid;
+	protected int row;
+	protected int col;
+
+	protected void initGrid() {
+		row = 5 * this.width + 2;
+		col = 2 * this.height + 1;
+
+		grid = new byte[row * col];
+		int n = 0;
+
+		for (int y = 0; y < col; y++) {
+			for (int x = 0; x < row; x++) {
+				if (x == row - 1) {
+					grid[n++] = '\n';
+					continue;
+				}
+
+				if (x % 5 == 0) {
+					grid[n++] = '|';
+					continue;
+				}
+
+				if (y % 2 == 0) {
+					grid[n++] = '-';
+					continue;
+				}
+
+				grid[n++] = ' ';
+
+			}
+		}
+
+		this.rewards.forEach((loc, r) -> {
+			if (r <= -10) {
+				stamp(grid, loc, '#', '#', '#', '#');
+			}
+		});
+
+		stamp(grid, goal, '>', ' ', ' ', '<');
+	}
+
+	protected void stamp(byte[] dst, Location2D loc, char c1, char c2, char c3, char c4) {
+		int p = (2 * (height - loc.y) + 1) * row + 5 * (loc.x - 1);
+		dst[p + 1] = (byte) c1;
+		dst[p + 2] = (byte) c2;
+		dst[p + 3] = (byte) c3;
+		dst[p + 4] = (byte) c4;
 	}
 
 }
