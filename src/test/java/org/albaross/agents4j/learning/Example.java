@@ -1,7 +1,6 @@
 package org.albaross.agents4j.learning;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -30,7 +29,7 @@ public class Example {
 				return Direction2D.WEST;
 			}
 		};
-		
+
 		Map<Location2D, Double> rewards = new TreeMap<>();
 		rewards.put(new Location2D(2, 1), -100.0);
 		rewards.put(new Location2D(3, 1), -100.0);
@@ -40,8 +39,8 @@ public class Example {
 		rewards.put(new Location2D(7, 1), -100.0);
 
 		GridworldEnvironment env = new GridworldEnvironment(
-				Arrays.asList(new RLWrapper<>(new BasicBuilder<Location2D, Direction2D>().add(policy).add(qTable).getAgent())),
-				rewards, Location2D.ORIGIN_2D, new Location2D(8, 1), 8, 6);
+				Arrays.asList(new RLWrapper<>(new BasicBuilder<Location2D, Direction2D>().add(policy).add(qTable).getAgent())), rewards,
+				Location2D.ORIGIN_2D, new Location2D(8, 1), 8, 6);
 
 		for (int r = 0; r < 10000; r++) {
 			env.run();

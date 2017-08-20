@@ -5,16 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.albaross.agents4j.core.Agent;
-import org.albaross.agents4j.learning.MDPWrapper;
 import org.albaross.agents4j.learning.RLEnvironment;
-import org.deeplearning4j.rl4j.mdp.MDP;
-import org.deeplearning4j.rl4j.space.DiscreteSpace;
-import org.deeplearning4j.rl4j.space.ObservationSpace;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D> implements MDPWrapper<Location2D, Direction2D> {
+public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GridworldEnvironment.class);
 
@@ -49,61 +44,6 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 		}
 	}
 
-	protected final DiscreteSpace actions = new DiscreteSpace(4);
-	protected final ObservationSpace<Location2D> observations = new ObservationSpace<Location2D>() {
-
-		@Override
-		public String getName() {
-			return "Observations 2D";
-		}
-
-		@Override
-		public int[] getShape() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public INDArray getLow() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public INDArray getHigh() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-	};
-
-	@Override
-	public ObservationSpace<Location2D> getObservationSpace() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DiscreteSpace getActionSpace() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public MDP<Location2D, Integer, DiscreteSpace> newInstance() {
-		return new GridworldEnvironment(agents, rewards, start, goal, width, height);
-	}
-
-	@Override
-	public RLEnvironment<Location2D, Direction2D> env() {
-		return this;
-	}
-
-	@Override
-	public Direction2D decode(Integer action) {
-		return Direction2D.values()[action];
-	}
-
 	@Override
 	public String toString() {
 		if (grid == null)
@@ -111,7 +51,10 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 
 		byte[] tmp = new byte[grid.length];
 		System.arraycopy(grid, 0, tmp, 0, grid.length);
-		stamp(tmp, currentState[0], ' ', '=', ')', ' ');
+
+		for (Location2D loc : currentState)
+			stamp(tmp, 1, loc, '=', ')');
+
 		return new String(tmp, StandardCharsets.UTF_8);
 	}
 
@@ -150,19 +93,18 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 
 		this.rewards.forEach((loc, r) -> {
 			if (r <= -10) {
-				stamp(grid, loc, '#', '#', '#', '#');
+				stamp(grid, 0, loc, '#', '#', '#', '#');
 			}
 		});
 
-		stamp(grid, goal, '>', ' ', ' ', '<');
+		stamp(grid, 0, goal, '>', ' ', ' ', '<');
 	}
 
-	protected void stamp(byte[] dst, Location2D loc, char c1, char c2, char c3, char c4) {
+	protected void stamp(byte[] dst, int offset, Location2D loc, char... cs) {
 		int p = (2 * (height - loc.y) + 1) * row + 5 * (loc.x - 1);
-		dst[p + 1] = (byte) c1;
-		dst[p + 2] = (byte) c2;
-		dst[p + 3] = (byte) c3;
-		dst[p + 4] = (byte) c4;
+
+		for (int s = 0; s < cs.length; s++)
+			dst[p + offset + s + 1] = (byte) cs[s];
 	}
 
 }
