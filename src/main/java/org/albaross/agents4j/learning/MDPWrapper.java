@@ -11,7 +11,7 @@ public interface MDPWrapper<S extends Encodable, A> extends MDP<S, Integer, Disc
 	@Override
 	default S reset() {
 		env().reboot();
-		return env().start;
+		return env().createPerception(0);
 	}
 
 	@Override
@@ -21,8 +21,8 @@ public interface MDPWrapper<S extends Encodable, A> extends MDP<S, Integer, Disc
 	default StepReply<S> step(Integer action) {
 		env().runEnvironment();
 		env().executeAction(0, decode(action));
-		S next = env().currentState[0];
-		double reward = env().getReward(next);
+		S next = env().createPerception(0);
+		double reward = env().getReward(0);
 		boolean done = isDone();
 		JSONObject info = new JSONObject();
 		return new StepReply<>(next, reward, done, info);

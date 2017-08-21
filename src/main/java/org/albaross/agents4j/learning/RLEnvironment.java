@@ -1,77 +1,44 @@
 package org.albaross.agents4j.learning;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.albaross.agents4j.core.Agent;
 import org.albaross.agents4j.core.common.BasicEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author Manuel Barbi
+ *
+ * @param <S> state
+ * @param <A> action
+ */
 public abstract class RLEnvironment<S, A> extends BasicEnvironment<S, A> {
 
-	protected S[] currentState;
+	private static final Logger LOG = LoggerFactory.getLogger(RLEnvironment.class);
 
-	protected S start;
-	protected S goal;
-
-	protected Map<S, Double> rewards;
-
-	public RLEnvironment(List<Agent<S, A>> agents, Map<S, Double> rewards, S start, S goal) {
+	public RLEnvironment(List<Agent<S, A>> agents) {
 		super(agents);
-		this.currentState = ara(agents.size());
-		this.start = start;
-		this.goal = goal;
-		this.rewards = rewards;
-	}
-
-	@Override
-	public void reboot() {
-		super.reboot();
-		Arrays.fill(currentState, start);
-	}
-
-	protected abstract S[] ara(int size);
-
-	@Override
-	public S createPerception(long agentId) {
-		return currentState[(int) agentId];
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void executeAction(long agentId, A action) {
-		S current = currentState[(int) agentId];
-		S next = nextState(current, action);
+	protected void runSingleAgent(Agent<S, A> agent, int agentId) {
+		S state = createPerception(agentId);
+		LOG.debug("create perception {} for agent {}", state, agentId);
+		A action = agent.generateAction(state);
+		LOG.debug("agent {} executes {}", agentId, action);
 
-		double reward = getReward(next);
+		executeAction(agentId, action);
 
-		currentState[(int) agentId] = next;
-		Agent<S, A> agent = agents.get((int) agentId);
+		double reward = getReward(agentId);
+		S next = createPerception(agentId);
+
 		if (agent instanceof ReinforcementLearner<?, ?>)
-			((ReinforcementLearner<S, A>) agent).update(current, action, reward, next);
+			((ReinforcementLearner<S, A>) agent).update(state, action, reward, next);
 	}
 
-	protected double getReward(S next) {
-		double reward = -1;
-
-		if (!next.equals(goal)) {
-			if (rewards.containsKey(next))
-				reward = rewards.get(next);
-		} else {
-			reward = 0;
-		}
-
-		return reward;
-	}
-
-	public abstract S nextState(S current, A action);
-
-	@Override
-	public void runEnvironment() {}
-
-	@Override
-	public boolean terminationCriterion(long agentId) {
-		return currentState[(int) agentId].equals(goal);
-	}
+	protected abstract double getReward(long agentId);
 
 }

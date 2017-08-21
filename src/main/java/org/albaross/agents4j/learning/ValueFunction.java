@@ -6,6 +6,6 @@ public interface ValueFunction<S, A> extends DataComponent {
 
 	A getBestAction(S state);
 
-	void update(S state, A action, double reward, S nextState);
+	void update(S state, A action, double reward, S next);
 
 }

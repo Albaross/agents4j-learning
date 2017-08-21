@@ -8,8 +8,8 @@ public interface ReinforcementLearner<S, A> {
 	 * @param state
 	 * @param action
 	 * @param reward
-	 * @param nextState
+	 * @param next
 	 */
-	void update(S state, A action, double reward, S nextState);
+	void update(S state, A action, double reward, S next);
 
 }

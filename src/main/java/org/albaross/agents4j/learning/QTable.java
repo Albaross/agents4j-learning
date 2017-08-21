@@ -49,14 +49,14 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 	 * @param state
 	 * @param action
 	 * @param reward
-	 * @param nextState
-	 * @param learningRate
-	 * @param discountRate
+	 * @param next
+	 * @param alpha the learning rate
+	 * @param gamma the discount rate
 	 */
-	public void update(S state, A action, double reward, S nextState, double learningRate, double discountRate) {
+	public void update(S state, A action, double reward, S next, double alpha, double gamma) {
 		double old = get(state, action);
-		double max = getMaxWeight(nextState);
-		double weight = (1 - learningRate) * old + learningRate * (reward + discountRate * max);
+		double max = getMaxWeight(next);
+		double weight = (1 - alpha) * old + alpha * (reward + gamma * max);
 		put(state, action, weight);
 	}
 
