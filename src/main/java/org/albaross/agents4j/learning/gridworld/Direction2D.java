@@ -1,4 +1,4 @@
-package org.albaross.agents4j.learning.common;
+package org.albaross.agents4j.learning.gridworld;
 
 /**
  * 
