@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.Set;
 
 /**
+ * Both state and action should override the hashCode() and equals() methods in order to work properly.
  * 
  * @author Manuel Barbi
  *
@@ -142,9 +143,9 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 				bestActions.add(e.getKey());
 		}
 
-		if(bestActions.size() == 1)
+		if (bestActions.size() == 1)
 			return bestActions.get(0);
-		
+
 		return bestActions.get(rnd.nextInt(bestActions.size()));
 	}
 
