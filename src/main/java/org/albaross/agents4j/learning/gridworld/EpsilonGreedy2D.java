@@ -9,7 +9,7 @@ import org.albaross.agents4j.learning.EpsilonGreedyOperator;
  * @author Manuel Barbi
  *
  */
-public class Greedy2D<P> implements EpsilonGreedyOperator<P, Direction2D> {
+public class EpsilonGreedy2D<P> implements EpsilonGreedyOperator<P, Direction2D> {
 
 	protected final Random rnd = new Random();
 
