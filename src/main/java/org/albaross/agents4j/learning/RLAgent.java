@@ -1,6 +1,8 @@
 package org.albaross.agents4j.learning;
 
-public interface ReinforcementLearner<S, A> {
+import org.albaross.agents4j.core.Agent;
+
+public interface RLAgent<S, A> extends Agent<S, A> {
 
 	/**
 	 * Calculates and updates the weight of an executed action.

@@ -2,10 +2,9 @@ package org.albaross.agents4j.learning;
 
 import java.util.Objects;
 
-import org.albaross.agents4j.core.Agent;
 import org.albaross.agents4j.core.common.BasicAgent;
 
-public class RLWrapper<S, A> implements Agent<S, A>, ReinforcementLearner<S, A> {
+public class RLWrapper<S, A> implements RLAgent<S, A> {
 
 	protected BasicAgent<S, A> agent;
 
@@ -18,8 +17,8 @@ public class RLWrapper<S, A> implements Agent<S, A>, ReinforcementLearner<S, A> 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void update(S state, A action, double reward, S nextState) {
-		this.agent.getComponent(ValueFunction.class).update(state, action, reward, nextState);
+	public void update(S state, A action, double reward, S next) {
+		this.agent.getComponent(ValueFunction.class).update(state, action, reward, next);
 	}
 
 	@Override

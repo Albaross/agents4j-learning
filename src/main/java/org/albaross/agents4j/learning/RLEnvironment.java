@@ -22,7 +22,6 @@ public abstract class RLEnvironment<S, A> extends BasicEnvironment<S, A> {
 		super(agents);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void runSingleAgent(Agent<S, A> agent, int agentId) {
 		S state = createPerception(agentId);
@@ -35,8 +34,8 @@ public abstract class RLEnvironment<S, A> extends BasicEnvironment<S, A> {
 		double reward = getReward(agentId);
 		S next = createPerception(agentId);
 
-		if (agent instanceof ReinforcementLearner<?, ?>)
-			((ReinforcementLearner<S, A>) agent).update(state, action, reward, next);
+		if (agent instanceof RLAgent<?, ?>)
+			((RLAgent<S, A>) agent).update(state, action, reward, next);
 	}
 
 	protected abstract double getReward(long agentId);
