@@ -21,7 +21,7 @@ import java.util.Set;
  */
 public class QTable<S, A> implements ValueFunction<S, A> {
 
-	protected Random rnd = new Random();
+	protected static final Random RND = new Random();
 	protected Map<S, Map<A, Double>> map;
 	protected int size;
 
@@ -146,7 +146,7 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 		if (bestActions.size() == 1)
 			return bestActions.get(0);
 
-		return bestActions.get(rnd.nextInt(bestActions.size()));
+		return bestActions.get(RND.nextInt(bestActions.size()));
 	}
 
 	@Override

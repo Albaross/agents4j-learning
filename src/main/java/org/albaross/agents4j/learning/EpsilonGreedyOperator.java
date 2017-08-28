@@ -1,6 +1,7 @@
 package org.albaross.agents4j.learning;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import org.albaross.agents4j.core.common.ActionOperator;
@@ -10,10 +11,12 @@ import org.albaross.agents4j.core.common.OperationParam;
 @FunctionalInterface
 public interface EpsilonGreedyOperator<P, A> extends ActionOperator<P, A> {
 
+	static final Random RND = new Random();
+
 	default A generate(OperationParam<P, A> param) {
 		P perception = param.getPerception();
 
-		if (Math.random() <= getExploreRate())
+		if (RND.nextDouble() <= getExploreRate())
 			return randomAction();
 
 		@SuppressWarnings("unchecked")
