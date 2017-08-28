@@ -1,5 +1,7 @@
 package org.albaross.agents4j.learning;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,8 +10,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Both state and action should override the hashCode() and equals() methods in order to work properly.
@@ -28,6 +33,14 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 	public QTable() {
 		this.map = new HashMap<>();
 		this.size = 0;
+	}
+
+	protected QTable(Map<S, Map<A, Double>> map) {
+		this.map = Objects.requireNonNull(map, "map must not be null");
+		this.size = 0;
+
+		for (Map<A, Double> vals : map.values())
+			this.size += vals.size();
 	}
 
 	public int size() {
@@ -147,6 +160,17 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 			return bestActions.get(0);
 
 		return bestActions.get(RND.nextInt(bestActions.size()));
+	}
+
+	public void save(File dst) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writerWithDefaultPrettyPrinter().writeValue(dst, this.map);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <S, A> QTable<S, A> load(File src, Class<S> stateType, Class<A> actionType) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		return new QTable<S, A>(mapper.readValue(src, Map.class));
 	}
 
 	@Override
