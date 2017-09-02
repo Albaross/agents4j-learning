@@ -3,6 +3,10 @@ package org.albaross.agents4j.learning;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.albaross.agents4j.core.common.ActionOperator;
+import org.albaross.agents4j.core.common.BasicBuilder;
+import org.albaross.agents4j.core.common.DataComponent;
+import org.albaross.agents4j.learning.gridworld.Direction2D;
 import org.albaross.agents4j.learning.gridworld.GridworldRiver;
 import org.albaross.agents4j.learning.gridworld.GridworldWrapper;
 import org.albaross.agents4j.learning.gridworld.Location2D;
@@ -29,23 +33,31 @@ public class RL4JExample {
 			true //double DQN
 	);
 
-	public static IDQN GRIDWORLD_NET = new QNet(3, 16, 4, 4, 0.001);
+	public static IDQN GRIDWORLD_NET = new QNet<Location2D, Direction2D>(3, 16, 4, 4, 0.001, (code) -> {
+		return Direction2D.values()[code];
+	});
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
 
 		//record the training data in rl4j-data in a new folder (save)
 		DataManager manager = new DataManager(true);
 
 		//define the mdp from gym (name, render)
-		GridworldWrapper mdp = new GridworldWrapper(new GridworldRiver(Arrays.asList((p) -> {
-			return null;
-		})));
+		BasicBuilder<Location2D, Direction2D> builder = new BasicBuilder<>();
+		builder.add((DataComponent) GRIDWORLD_NET).add((ActionOperator<Location2D, Direction2D>) (param) -> {
+			return (Direction2D) param.getComponent(ValueFunction.class).getBestAction(param.getPerception());
+		});
+
+		GridworldRiver env = new GridworldRiver(Arrays.asList(builder.getAgent()));
 
 		//define the training
-		QLearningDiscreteDense<Location2D> dql = new QLearningDiscreteDense<>(mdp, GRIDWORLD_NET, GRIDWORLD_QL, manager);
+		QLearningDiscreteDense<Location2D> dql = new QLearningDiscreteDense<>(new GridworldWrapper(env), GRIDWORLD_NET, GRIDWORLD_QL, manager);
 
 		//train
 		dql.train();
+
+		System.out.println("rewards: " + env.getCumulative(0));
 
 		//get the final policy
 		DQNPolicy<Location2D> pol = dql.getPolicy();
@@ -53,8 +65,6 @@ public class RL4JExample {
 		//serialize and save (serialization showcase, but not required)
 		pol.save("/tmp/pol1");
 
-		//close the mdp (close http)
-		mdp.close();
 	}
 
 }
