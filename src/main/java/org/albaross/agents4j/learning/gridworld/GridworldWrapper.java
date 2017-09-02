@@ -12,11 +12,17 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
 public class GridworldWrapper implements MDPWrapper<Location2D, Direction2D> {
 
 	protected final GridworldEnvironment gridworld;
+	protected final int agentId;
 	protected static final DiscreteSpace ACTIONS = new DiscreteSpace(4);
 	protected static final ObservationSpace<Location2D> OBSERVATIONS = new ArrayObservationSpace<>(new int[] { 3 });
 
 	public GridworldWrapper(GridworldEnvironment gridworld) {
+		this(gridworld, 0);
+	}
+
+	public GridworldWrapper(GridworldEnvironment gridworld, int agentId) {
 		this.gridworld = Objects.requireNonNull(gridworld, "gridworld must not be null");
+		this.agentId = agentId;
 	}
 
 	@Override
@@ -42,6 +48,11 @@ public class GridworldWrapper implements MDPWrapper<Location2D, Direction2D> {
 	@Override
 	public Direction2D decode(Integer action) {
 		return Direction2D.values()[action];
+	}
+
+	@Override
+	public int getAgentId() {
+		return agentId;
 	}
 
 }

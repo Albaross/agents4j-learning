@@ -16,6 +16,7 @@ public class QTableExample {
 
 		for (int r = 0; r < 10000; r++) {
 			env.run();
+			System.out.println(env.getCumulative(0));
 		}
 	}
 

@@ -51,27 +51,26 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 	}
 
 	@Override
-	public Location2D createPerception(long agentId) {
-		return currentState[(int) agentId];
+	public Location2D createPerception(int agentId) {
+		return currentState[agentId];
 	}
 
 	@Override
-	public void executeAction(long agentId, Direction2D action) {
-		int idx = (int) agentId;
-		Location2D current = currentState[idx];
+	public void executeAction(int agentId, Direction2D action) {
+		Location2D current = currentState[agentId];
 
 		switch (action) {
 		case NORTH:
-			currentState[idx] = current.y < height - 1 ? new Location2D(current.x, current.y + 1) : current;
+			currentState[agentId] = current.y < height - 1 ? new Location2D(current.x, current.y + 1) : current;
 			break;
 		case SOUTH:
-			currentState[idx] = current.y > 0 ? new Location2D(current.x, current.y - 1) : current;
+			currentState[agentId] = current.y > 0 ? new Location2D(current.x, current.y - 1) : current;
 			break;
 		case EAST:
-			currentState[idx] = current.x < width - 1 ? new Location2D(current.x + 1, current.y) : current;
+			currentState[agentId] = current.x < width - 1 ? new Location2D(current.x + 1, current.y) : current;
 			break;
 		case WEST:
-			currentState[idx] = current.x > 0 ? new Location2D(current.x - 1, current.y) : current;
+			currentState[agentId] = current.x > 0 ? new Location2D(current.x - 1, current.y) : current;
 			break;
 		default:
 			LOG.warn("unknown action");
@@ -79,7 +78,7 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 	}
 
 	@Override
-	protected double getReward(long agentId) {
+	protected double getReward(int agentId) {
 		double reward = -1;
 		Location2D next = createPerception(agentId);
 
@@ -97,8 +96,8 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 	public void runEnvironment() {}
 
 	@Override
-	public boolean terminationCriterion(long agentId) {
-		return currentState[(int) agentId].equals(goal);
+	public boolean terminationCriterion(int agentId) {
+		return currentState[agentId].equals(goal);
 	}
 
 	@Override

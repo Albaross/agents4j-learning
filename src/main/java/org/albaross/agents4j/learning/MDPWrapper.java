@@ -11,7 +11,7 @@ public interface MDPWrapper<S extends Encodable, A> extends MDP<S, Integer, Disc
 	@Override
 	default S reset() {
 		env().reboot();
-		return env().createPerception(0);
+		return env().createPerception(getAgentId());
 	}
 
 	@Override
@@ -19,10 +19,12 @@ public interface MDPWrapper<S extends Encodable, A> extends MDP<S, Integer, Disc
 
 	@Override
 	default StepReply<S> step(Integer action) {
+		int agentId = getAgentId();
 		env().runEnvironment();
-		env().executeAction(0, decode(action));
-		S next = env().createPerception(0);
-		double reward = env().getReward(0);
+		env().executeAction(agentId, decode(action));
+		S next = env().createPerception(agentId);
+		double reward = env().getReward(agentId);
+		env().cumulate(agentId, reward);
 		boolean done = isDone();
 		JSONObject info = new JSONObject();
 		return new StepReply<>(next, reward, done, info);
@@ -30,11 +32,13 @@ public interface MDPWrapper<S extends Encodable, A> extends MDP<S, Integer, Disc
 
 	@Override
 	default boolean isDone() {
-		return env().terminationCriterion(0);
+		return env().terminationCriterion(getAgentId());
 	}
 
 	RLEnvironment<S, A> env();
 
 	A decode(Integer action);
+
+	int getAgentId();
 
 }
