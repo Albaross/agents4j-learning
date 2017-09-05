@@ -14,7 +14,11 @@ public enum Direction2D {
 	private static final Random RND = new Random();
 
 	public static Direction2D randomAction() {
-		return Direction2D.values()[RND.nextInt(Direction2D.values().length)];
+		return values()[RND.nextInt(values().length)];
+	}
+
+	public static Direction2D decode(int code) {
+		return values()[code];
 	}
 
 }

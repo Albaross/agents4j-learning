@@ -1,44 +1,69 @@
 package org.albaross.agents4j.learning;
 
+import java.util.Objects;
+
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
+import org.deeplearning4j.rl4j.space.ArrayObservationSpace;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
+import org.deeplearning4j.rl4j.space.ObservationSpace;
 import org.json.JSONObject;
 
-public interface MDPWrapper<S extends Encodable, A> extends MDP<S, Integer, DiscreteSpace> {
+public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 
-	@Override
-	default S reset() {
-		env().reboot();
-		return env().createPerception(getAgentId());
+	private final RLEnvironment<S, A> env;
+	private final ObservationSpace<S> observations;
+	private final DiscreteSpace actions;
+	private final Decoder<A> decoder;
+
+	public MDPWrapper(RLEnvironment<S, A> env, int netIn, int actions, Decoder<A> decoder) {
+		this(env, new ArrayObservationSpace<>(new int[] { netIn }), new DiscreteSpace(actions), decoder);
+	}
+
+	public MDPWrapper(RLEnvironment<S, A> env, ObservationSpace<S> observations, DiscreteSpace actions, Decoder<A> decoder) {
+		this.env = Objects.requireNonNull(env, "environment must not be null");
+		this.observations = Objects.requireNonNull(observations, "observations must not be null");
+		this.actions = Objects.requireNonNull(actions, "actions must not be null");
+		this.decoder = Objects.requireNonNull(decoder, "decoder must not be null");
 	}
 
 	@Override
-	default void close() {}
-
-	@Override
-	default StepReply<S> step(Integer action) {
-		int agentId = getAgentId();
-		env().runEnvironment();
-		env().executeAction(agentId, decode(action));
-		S next = env().createPerception(agentId);
-		double reward = env().getReward(agentId);
-		env().cumulate(agentId, reward);
-		boolean done = isDone();
-		JSONObject info = new JSONObject();
-		return new StepReply<>(next, reward, done, info);
+	public S reset() {
+		this.env.reboot();
+		return this.env.createPerception(0);
 	}
 
 	@Override
-	default boolean isDone() {
-		return env().terminationCriterion(getAgentId());
+	public StepReply<S> step(Integer action) {
+		env.runEnvironment();
+		env.executeAction(0, decoder.decode(action));
+		S next = env.createPerception(0);
+		double reward = env.getReward(0);
+		env.cumulate(0, reward);
+		return new StepReply<>(next, reward, isDone(), new JSONObject("{}"));
 	}
 
-	RLEnvironment<S, A> env();
+	@Override
+	public boolean isDone() {
+		return this.env.terminationCriterion(0);
+	}
 
-	A decode(Integer action);
+	@Override
+	public ObservationSpace<S> getObservationSpace() {
+		return observations;
+	}
 
-	int getAgentId();
+	@Override
+	public DiscreteSpace getActionSpace() {
+		return actions;
+	}
+
+	@Override
+	public MDP<S, Integer, DiscreteSpace> newInstance() {
+		return new MDPWrapper<>(env, observations, actions, decoder);
+	}
+
+	@Override
+	public void close() {}
 
 }
