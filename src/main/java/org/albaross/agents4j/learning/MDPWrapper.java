@@ -1,5 +1,6 @@
 package org.albaross.agents4j.learning;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import org.deeplearning4j.gym.StepReply;
@@ -35,13 +36,14 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 	}
 
 	@Override
-	public StepReply<S> step(Integer action) {
-		env.executeAction(0, decoder.decode(action));
+	public StepReply<S> step(Integer actionNr) {
+		A action = decoder.decode(actionNr);
+		env.executeAction(0, action);
 		double reward = env.getReward(0);
+		env.cumulate(0, reward);
 		boolean done = isDone();
 		env.runEnvironment();
 		S next = env.createPerception(0);
-		env.cumulate(0, reward);
 		return new StepReply<>(next, reward, done, new JSONObject("{}"));
 	}
 
@@ -67,5 +69,10 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 
 	@Override
 	public void close() {}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(env.cumulative);
+	}
 
 }

@@ -9,7 +9,7 @@ import org.albaross.agents4j.core.common.DataComponent;
 import org.albaross.agents4j.core.common.OperationParam;
 
 @FunctionalInterface
-public interface EpsilonGreedyOperator<P, A> extends ActionOperator<P, A> {
+public interface EpsilonGreedyOperator<P, A> extends ActionOperator<P, A>, Randomizer<A> {
 
 	static final Random RND = new Random();
 
@@ -28,8 +28,6 @@ public interface EpsilonGreedyOperator<P, A> extends ActionOperator<P, A> {
 	default double getExploreRate() {
 		return 0.1;
 	}
-
-	A randomAction();
 
 	@Override
 	default Set<Class<? extends DataComponent>> getRequired() {
