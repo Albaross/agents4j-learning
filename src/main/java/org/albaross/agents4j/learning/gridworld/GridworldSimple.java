@@ -3,51 +3,46 @@ package org.albaross.agents4j.learning.gridworld;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import org.albaross.agents4j.core.Agent;
 import org.albaross.agents4j.learning.RLEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D> {
+public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GridworldEnvironment.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GridworldSimple.class);
 
 	protected Location2D[] currentState;
 
-	protected int width, height;
+	protected int width;
+	protected int height;
 	protected Location2D start;
 	protected Location2D goal;
-	protected Map<Location2D, Double> rewards;
+	protected double[] rewards;
 
-	public GridworldEnvironment(List<Agent<Location2D, Direction2D>> agents, Map<Location2D, Double> rewards, Location2D start, Location2D goal,
-			int width, int height) {
+	public GridworldSimple(List<Agent<Location2D, Direction2D>> agents) {
+		this(agents, 8, 6);
+	}
+
+	public GridworldSimple(List<Agent<Location2D, Direction2D>> agents, int width, int height) {
 		super(agents);
 		this.width = width;
 		this.height = height;
-
-		this.rewards = Objects.requireNonNull(rewards, "rewards must not be null");
-		for (Location2D loc : rewards.keySet())
-			checkWithin(loc);
-
-		this.start = checkWithin(start);
-		this.goal = checkWithin(goal);
-
+		this.start = new Location2D(0, 0);
+		this.goal = new Location2D(width - 1, 0);
+		this.rewards = new double[width * height];
+		Arrays.fill(this.rewards, -1);
+		reward(goal.x, goal.y, 100);
 		this.currentState = new Location2D[agents.size()];
 	}
 
-	protected Location2D checkWithin(Location2D loc) {
-		Objects.requireNonNull(loc, "location must not be null");
+	protected double reward(int x, int y) {
+		return this.rewards[y * width + x];
+	}
 
-		if (loc.x < 0 || loc.x > width - 1)
-			throw new IllegalArgumentException("x is out of range: " + loc.x);
-
-		if (loc.y < 0 || loc.y > height - 1)
-			throw new IllegalArgumentException("y is out of range: " + loc.y);
-
-		return loc;
+	protected void reward(int x, int y, double reward) {
+		this.rewards[y * width + x] = reward;
 	}
 
 	@Override
@@ -79,21 +74,9 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 
 	@Override
 	protected double getReward(int agentId) {
-		double reward = -1;
 		Location2D next = createPerception(agentId);
-
-		if (!next.equals(goal)) {
-			if (rewards.containsKey(next))
-				reward = rewards.get(next);
-		} else {
-			reward = 0;
-		}
-
-		return reward;
+		return reward(next.x, next.y);
 	}
-
-	@Override
-	public void runEnvironment() {}
 
 	@Override
 	public boolean terminationCriterion(int agentId) {
@@ -115,7 +98,7 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 		System.arraycopy(grid, 0, tmp, 0, grid.length);
 
 		for (Location2D loc : currentState)
-			stamp(tmp, 1, loc, '=', ')');
+			stamp(tmp, loc.x, loc.y, 1, '=', ')');
 
 		return new String(tmp, StandardCharsets.UTF_8);
 	}
@@ -153,17 +136,19 @@ public class GridworldEnvironment extends RLEnvironment<Location2D, Direction2D>
 			}
 		}
 
-		this.rewards.forEach((loc, r) -> {
-			if (r <= -10) {
-				stamp(grid, 0, loc, '#', '#', '#', '#');
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (rewards[y * width + x] <= -10) {
+					stamp(grid, x, y, 0, '#', '#', '#', '#');
+				}
 			}
-		});
+		}
 
-		stamp(grid, 0, goal, '>', ' ', ' ', '<');
+		stamp(grid, goal.x, goal.y, 0, '>', ' ', ' ', '<');
 	}
 
-	protected void stamp(byte[] dst, int offset, Location2D loc, char... cs) {
-		int p = (2 * (height - loc.y) - 1) * row + 5 * loc.x;
+	protected void stamp(byte[] dst, int x, int y, int offset, char... cs) {
+		int p = (2 * (height - y) - 1) * row + 5 * x;
 
 		for (int s = 0; s < cs.length; s++)
 			dst[p + offset + s + 1] = (byte) cs[s];
