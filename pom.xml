@@ -20,7 +20,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.deeplearning4j</groupId>
-			<artifactId>rl4j-gym</artifactId>
+			<artifactId>deeplearning4j-ui_2.11</artifactId>
 			<version>0.9.1</version>
 		</dependency>
 		<dependency>
