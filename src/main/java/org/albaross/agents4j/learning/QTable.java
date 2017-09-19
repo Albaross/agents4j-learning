@@ -48,8 +48,8 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 	}
 
 	@Override
-	public void update(S state, A action, double reward, S next) {
-		update(state, action, reward, next, 0.1, 0.9);
+	public void update(S state, A action, double reward, S next, boolean terminal) {
+		update(state, action, reward, next, terminal, 0.1, 0.9);
 	}
 
 	/**
@@ -62,9 +62,9 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 	 * @param alpha the learning rate
 	 * @param gamma the discount rate
 	 */
-	public void update(S state, A action, double reward, S next, double alpha, double gamma) {
+	public void update(S state, A action, double reward, S next, boolean terminal, double alpha, double gamma) {
 		double old = get(state, action);
-		double max = getMaxWeight(next);
+		double max = !terminal ? getMaxWeight(next) : 0;
 		double weight = (1 - alpha) * old + alpha * (reward + gamma * max);
 		put(state, action, weight);
 	}

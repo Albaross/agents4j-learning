@@ -11,7 +11,8 @@ public interface RLAgent<S, A> extends Agent<S, A> {
 	 * @param action
 	 * @param reward
 	 * @param next
+	 * @param terminal
 	 */
-	void update(S state, A action, double reward, S next);
+	void update(S state, A action, double reward, S next, boolean terminal);
 
 }

@@ -1,6 +1,6 @@
 package org.albaross.agents4j.learning;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -8,18 +8,30 @@ import java.util.Random;
 public class ReplayAgent<S, A> implements RLAgent<S, A> {
 
 	private final Random RND = new Random();
+	private final Randomizer<A> randomizer;
 	private final QTable<S, A> table = new QTable<>();
-	private List<Experience<S, A>> lesson = new LinkedList<>();
+	private final int replayCapacity;
+	private final int epsilonAnnealing;
 
-	private Randomizer<A> randomizer;
-	private double epsilon = 0.1;
+	private List<Experience<S, A>> replay;
+	private int steps = 0;
 
-	public ReplayAgent(Randomizer<A> randomizer) {
+	public ReplayAgent(Randomizer<A> randomizer, int epsilonAnnealing) {
+		this(randomizer, 100000, epsilonAnnealing);
+	}
+
+	public ReplayAgent(Randomizer<A> randomizer, int replayCapacity, int epsilonAnnealing) {
 		this.randomizer = Objects.requireNonNull(randomizer, "randomizer must not be null");
+		this.replayCapacity = replayCapacity;
+		this.epsilonAnnealing = epsilonAnnealing;
+		this.replay = new ArrayList<>(replayCapacity);
 	}
 
 	@Override
 	public A generateAction(S perception) {
+		double epsilon = getEpsilon();
+		steps++;
+
 		if (RND.nextDouble() <= epsilon)
 			return randomizer.randomAction();
 
@@ -28,19 +40,23 @@ public class ReplayAgent<S, A> implements RLAgent<S, A> {
 		return action != null ? action : randomizer.randomAction();
 	}
 
-	@Override
-	public void update(S state, A action, double reward, S next) {
-		lesson.add(0, new Experience<>(state, action, reward, next));
+	private double getEpsilon() {
+		return Math.min(Math.max(1.0 - (double) steps / epsilonAnnealing, 0.1), 1.0);
+	}
 
-		if (lesson.size() > 100000)
+	@Override
+	public void update(S state, A action, double reward, S next, boolean terminal) {
+		replay.add(0, new Experience<>(state, action, reward, next, terminal));
+
+		if (replay.size() >= replayCapacity)
 			learn();
 	}
 
 	public void learn() {
-		for (Experience<S, A> exp : lesson)
-			table.update(exp.getState(), exp.getAction(), exp.getReward(), exp.getNext());
+		for (Experience<S, A> exp : replay)
+			table.update(exp.getState(), exp.getAction(), exp.getReward(), exp.getNext(), exp.isTerminal());
 
-		lesson = new LinkedList<>();
+		replay = new ArrayList<>(replayCapacity);
 	}
 
 	@Override

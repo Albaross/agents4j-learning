@@ -6,12 +6,14 @@ public class Experience<S, A> {
 	private final A action;
 	private final double reward;
 	private final S next;
+	private final boolean terminal;
 
-	public Experience(S state, A action, double reward, S next) {
+	public Experience(S state, A action, double reward, S next, boolean terminal) {
 		this.state = state;
 		this.action = action;
 		this.reward = reward;
 		this.next = next;
+		this.terminal = terminal;
 	}
 
 	public S getState() {
@@ -30,6 +32,10 @@ public class Experience<S, A> {
 		return next;
 	}
 
+	public boolean isTerminal() {
+		return terminal;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -40,6 +46,7 @@ public class Experience<S, A> {
 		temp = Double.doubleToLongBits(reward);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((state == null) ? 0 : state.hashCode());
+		result = prime * result + (terminal ? 1231 : 1237);
 		return result;
 	}
 
@@ -70,12 +77,14 @@ public class Experience<S, A> {
 				return false;
 		} else if (!state.equals(other.state))
 			return false;
+		if (terminal != other.terminal)
+			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "(" + state + ", " + action + ", " + reward + ", " + next + ")";
+		return "(" + state + ", " + action + ", " + reward + ", " + next + ", " + terminal + ")";
 	}
 
 }

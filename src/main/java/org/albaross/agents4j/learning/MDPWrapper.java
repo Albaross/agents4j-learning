@@ -31,6 +31,7 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 	@Override
 	public S reset() {
 		this.env.reboot();
+		env.tick();
 		env.runEnvironment();
 		return this.env.createPerception(0);
 	}
@@ -42,6 +43,7 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 		double reward = env.getReward(0);
 		env.cumulate(0, reward);
 		boolean done = isDone();
+		env.tick();
 		env.runEnvironment();
 		S next = env.createPerception(0);
 		return new StepReply<>(next, reward, done, new JSONObject("{}"));
