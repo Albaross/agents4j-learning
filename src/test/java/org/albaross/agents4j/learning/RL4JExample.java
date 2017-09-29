@@ -61,7 +61,7 @@ public class RL4JExample {
 		DQNFactoryStdDense.Configuration conf = builder() //
 				.l2(0.001) //
 				.learningRate(0.001) //
-				.numLayer(3) //
+				.numLayer(2) //
 				.numHiddenNodes(16) //
 				.listeners(new IterationListener[] { new StatsListener(statsStorage),
 						new ScoreIterationListener(Constants.NEURAL_NET_ITERATION_LISTENER) }) //

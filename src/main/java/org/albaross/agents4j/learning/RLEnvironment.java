@@ -30,6 +30,16 @@ public abstract class RLEnvironment<S, A> extends BasicEnvironment<S, A> {
 		this.cumulative = new double[agents.size()];
 	}
 
+	public RLEnvironment(RLEnvironment<S, A> env) {
+		super(env);
+		this.cumulative = env.cumulative.clone();
+		if (env.keepState != null) {
+			this.keepState = env.keepState.clone();
+			this.keepAction = env.keepAction.clone();
+			this.keepReward = env.keepReward.clone();
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void runSingleAgent(Agent<S, A> agent, int agentId) {

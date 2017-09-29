@@ -1,6 +1,7 @@
 package org.albaross.agents4j.learning;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -15,6 +16,8 @@ public class ReplayAgent<S, A> implements RLAgent<S, A> {
 
 	private List<Experience<S, A>> replay;
 	private int steps = 0;
+
+	private List<Experience<S, A>> lastSequence = Collections.emptyList();
 
 	public ReplayAgent(Randomizer<A> randomizer, int epsilonAnnealing) {
 		this(randomizer, 100000, epsilonAnnealing);
@@ -56,12 +59,22 @@ public class ReplayAgent<S, A> implements RLAgent<S, A> {
 		for (Experience<S, A> exp : replay)
 			table.update(exp.getState(), exp.getAction(), exp.getReward(), exp.getNext(), exp.isTerminal());
 
-		replay = new ArrayList<>(replayCapacity);
+		this.lastSequence = replay;
+
+		this.replay = new ArrayList<>(replayCapacity);
 	}
 
 	@Override
 	public void notifySuccess() {
 		learn();
+	}
+
+	public List<Experience<S, A>> getLastSequence() {
+		return lastSequence;
+	}
+
+	public QTable<S, A> getTable() {
+		return table;
 	}
 
 }

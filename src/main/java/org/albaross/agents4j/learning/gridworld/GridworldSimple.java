@@ -27,6 +27,7 @@ public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> {
 
 	public GridworldSimple(List<Agent<Location2D, Direction2D>> agents, int width, int height) {
 		super(agents);
+		this.currentState = new Location2D[agents.size()];
 		this.width = width;
 		this.height = height;
 		this.start = new Location2D(0, 0);
@@ -34,7 +35,16 @@ public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> {
 		this.rewards = new double[width * height];
 		Arrays.fill(this.rewards, -1);
 		reward(goal.x, goal.y, 100);
-		this.currentState = new Location2D[agents.size()];
+	}
+
+	public GridworldSimple(GridworldSimple env) {
+		super(env);
+		this.currentState = env.currentState.clone();
+		this.width = env.width;
+		this.height = env.height;
+		this.start = env.start;
+		this.goal = env.goal;
+		this.rewards = env.rewards.clone();
 	}
 
 	protected double reward(int x, int y) {
@@ -152,6 +162,11 @@ public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> {
 
 		for (int s = 0; s < cs.length; s++)
 			dst[p + offset + s + 1] = (byte) cs[s];
+	}
+
+	@Override
+	public GridworldSimple clone() {
+		return new GridworldSimple(this);
 	}
 
 }

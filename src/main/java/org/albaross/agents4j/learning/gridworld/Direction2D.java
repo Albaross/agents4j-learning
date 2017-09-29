@@ -21,4 +21,8 @@ public enum Direction2D {
 		return values()[code];
 	}
 
+	public static int encode(Direction2D action) {
+		return action.ordinal();
+	}
+
 }

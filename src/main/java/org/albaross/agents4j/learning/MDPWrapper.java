@@ -9,19 +9,23 @@ import org.deeplearning4j.rl4j.space.ArrayObservationSpace;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
+
+	private final Logger LOG = LoggerFactory.getLogger(MDPWrapper.class);
 
 	private final RLEnvironment<S, A> env;
 	private final ObservationSpace<S> observations;
 	private final DiscreteSpace actions;
-	private final Decoder<A> decoder;
+	private final ActionDecoder<A> decoder;
 
-	public MDPWrapper(RLEnvironment<S, A> env, int netIn, int actions, Decoder<A> decoder) {
+	public MDPWrapper(RLEnvironment<S, A> env, int netIn, int actions, ActionDecoder<A> decoder) {
 		this(env, new ArrayObservationSpace<>(new int[] { netIn }), new DiscreteSpace(actions), decoder);
 	}
 
-	public MDPWrapper(RLEnvironment<S, A> env, ObservationSpace<S> observations, DiscreteSpace actions, Decoder<A> decoder) {
+	public MDPWrapper(RLEnvironment<S, A> env, ObservationSpace<S> observations, DiscreteSpace actions, ActionDecoder<A> decoder) {
 		this.env = Objects.requireNonNull(env, "environment must not be null");
 		this.observations = Objects.requireNonNull(observations, "observations must not be null");
 		this.actions = Objects.requireNonNull(actions, "actions must not be null");
@@ -33,7 +37,9 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 		this.env.reboot();
 		env.tick();
 		env.runEnvironment();
-		return this.env.createPerception(0);
+		S state = this.env.createPerception(0);
+		LOG.info("<tick {}> agent perceives {}", env.getCurrentTick(), state);
+		return state;
 	}
 
 	@Override
@@ -41,11 +47,15 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 		A action = decoder.decode(actionNr);
 		env.executeAction(0, action);
 		double reward = env.getReward(0);
+		LOG.info("<tick {}> agent executes {} and receives {}", env.getCurrentTick(), action, reward);
+
 		env.cumulate(0, reward);
 		boolean done = isDone();
 		env.tick();
 		env.runEnvironment();
+
 		S next = env.createPerception(0);
+		LOG.info("<tick {}> agent perceives {}", env.getCurrentTick(), next);
 		return new StepReply<>(next, reward, done, new JSONObject("{}"));
 	}
 
@@ -66,7 +76,7 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 
 	@Override
 	public MDP<S, Integer, DiscreteSpace> newInstance() {
-		return new MDPWrapper<>(env, observations, actions, decoder);
+		return new MDPWrapper<>((RLEnvironment<S, A>) env.clone(), observations, actions, decoder);
 	}
 
 	@Override

@@ -20,4 +20,13 @@ public class GridworldLake extends GridworldSimple {
 		}
 	}
 
+	public GridworldLake(GridworldLake env) {
+		super(env);
+	}
+
+	@Override
+	public GridworldLake clone() {
+		return new GridworldLake(this);
+	}
+
 }

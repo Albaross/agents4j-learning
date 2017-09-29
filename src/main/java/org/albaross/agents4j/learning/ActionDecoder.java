@@ -1,7 +1,7 @@
 package org.albaross.agents4j.learning;
 
 @FunctionalInterface
-public interface Decoder<A> {
+public interface ActionDecoder<A> {
 
 	A decode(int code);
 
