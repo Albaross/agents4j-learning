@@ -18,13 +18,4 @@ public class GridworldRiver extends GridworldSimple {
 		}
 	}
 
-	public GridworldRiver(GridworldRiver env) {
-		super(env);
-	}
-
-	@Override
-	public GridworldRiver clone() {
-		return new GridworldRiver(this);
-	}
-
 }

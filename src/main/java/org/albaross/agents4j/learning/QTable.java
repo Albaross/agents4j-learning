@@ -20,7 +20,7 @@ import java.util.Set;
  * @param <S> state
  * @param <A> action
  */
-public class QTable<S, A> implements ValueFunction<S, A> {
+public class QTable<S, A> {
 
 	protected static final Random RND = new Random();
 	protected Map<S, Map<A, Double>> map;
@@ -45,11 +45,6 @@ public class QTable<S, A> implements ValueFunction<S, A> {
 
 	public boolean isEmpty() {
 		return size() == 0;
-	}
-
-	@Override
-	public void update(S state, A action, double reward, S next, boolean terminal) {
-		update(state, action, reward, next, terminal, 0.1, 0.9);
 	}
 
 	/**

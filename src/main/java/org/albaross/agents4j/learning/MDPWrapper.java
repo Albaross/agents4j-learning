@@ -1,8 +1,8 @@
 package org.albaross.agents4j.learning;
 
-import java.util.Arrays;
 import java.util.Objects;
 
+import org.albaross.agents4j.core.BasicEnvironment;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.ArrayObservationSpace;
@@ -16,16 +16,16 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 
 	private final Logger LOG = LoggerFactory.getLogger(MDPWrapper.class);
 
-	private final RLEnvironment<S, A> env;
+	private final BasicEnvironment<S, A> env;
 	private final ObservationSpace<S> observations;
 	private final DiscreteSpace actions;
 	private final ActionDecoder<A> decoder;
 
-	public MDPWrapper(RLEnvironment<S, A> env, int netIn, int actions, ActionDecoder<A> decoder) {
+	public MDPWrapper(BasicEnvironment<S, A> env, int netIn, int actions, ActionDecoder<A> decoder) {
 		this(env, new ArrayObservationSpace<>(new int[] { netIn }), new DiscreteSpace(actions), decoder);
 	}
 
-	public MDPWrapper(RLEnvironment<S, A> env, ObservationSpace<S> observations, DiscreteSpace actions, ActionDecoder<A> decoder) {
+	public MDPWrapper(BasicEnvironment<S, A> env, ObservationSpace<S> observations, DiscreteSpace actions, ActionDecoder<A> decoder) {
 		this.env = Objects.requireNonNull(env, "environment must not be null");
 		this.observations = Objects.requireNonNull(observations, "observations must not be null");
 		this.actions = Objects.requireNonNull(actions, "actions must not be null");
@@ -76,7 +76,7 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 
 	@Override
 	public MDP<S, Integer, DiscreteSpace> newInstance() {
-		return new MDPWrapper<>((RLEnvironment<S, A>) env.clone(), observations, actions, decoder);
+		return new MDPWrapper<>(env, observations, actions, decoder);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class MDPWrapper<S, A> implements MDP<S, Integer, DiscreteSpace> {
 
 	@Override
 	public String toString() {
-		return Arrays.toString(env.cumulative);
+		return String.valueOf(env.getCumulative(0));
 	}
 
 }

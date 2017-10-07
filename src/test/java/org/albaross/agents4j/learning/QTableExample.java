@@ -5,19 +5,24 @@ import java.util.Arrays;
 import org.albaross.agents4j.learning.gridworld.Direction2D;
 import org.albaross.agents4j.learning.gridworld.GridworldRiver;
 import org.albaross.agents4j.learning.gridworld.GridworldSimple;
+import org.albaross.agents4j.learning.gridworld.Location2D;
 
 public class QTableExample {
 
 	public static void main(String[] args) {
-		GridworldSimple env = new GridworldRiver(Arrays.asList(new ReplayAgent<>(Direction2D::randomAction, 500)));
+		ReplayAgent<Location2D, Direction2D> agent = new ReplayAgent<>(Direction2D::randomAction, 500);
+		GridworldSimple env = new GridworldRiver(Arrays.asList(agent));
 
-		for (int r = 0; r < 100000; r++) {
+		int r = 0;
+		int sum = 0;
+		do {
 			env.run();
-			if(env.getCumulative(0) > 91) {
-				System.out.println(r);
-				break;
-			}
-		}
+			sum = (int) env.getCumulative(0);
+			System.out.println("Round " + r + ", Rewards " + sum + ", Ticks " + env.getCurrentTick());
+
+			r++;
+		} while (r < 2000000 && sum < 92);
+
 	}
 
 }

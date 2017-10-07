@@ -66,7 +66,7 @@ public class Location2D implements Comparable<Location2D>, Encodable {
 
 	@Override
 	public double[] toArray() {
-		return new double[] { (x + 1) / 8.0, (y + 1) / 6.0, 1 };
+		return new double[] { (x + 1) / 8.0, (y + 1) / 6.0 };
 	}
 
 }

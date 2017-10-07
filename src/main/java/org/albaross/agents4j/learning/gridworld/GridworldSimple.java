@@ -5,11 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.albaross.agents4j.core.Agent;
-import org.albaross.agents4j.learning.RLEnvironment;
+import org.albaross.agents4j.core.BasicEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> {
+public class GridworldSimple extends BasicEnvironment<Location2D, Direction2D> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GridworldSimple.class);
 
@@ -35,16 +35,6 @@ public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> {
 		this.rewards = new double[width * height];
 		Arrays.fill(this.rewards, -1);
 		reward(goal.x, goal.y, 100);
-	}
-
-	public GridworldSimple(GridworldSimple env) {
-		super(env);
-		this.currentState = env.currentState.clone();
-		this.width = env.width;
-		this.height = env.height;
-		this.start = env.start;
-		this.goal = env.goal;
-		this.rewards = env.rewards.clone();
 	}
 
 	protected double reward(int x, int y) {
@@ -83,7 +73,7 @@ public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> {
 	}
 
 	@Override
-	protected double getReward(int agentId) {
+	public double getReward(int agentId) {
 		Location2D next = createPerception(agentId);
 		return reward(next.x, next.y);
 	}
@@ -162,11 +152,6 @@ public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> {
 
 		for (int s = 0; s < cs.length; s++)
 			dst[p + offset + s + 1] = (byte) cs[s];
-	}
-
-	@Override
-	public GridworldSimple clone() {
-		return new GridworldSimple(this);
 	}
 
 }

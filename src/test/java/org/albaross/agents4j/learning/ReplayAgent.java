@@ -6,7 +6,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class ReplayAgent<S, A> implements RLAgent<S, A> {
+import org.albaross.agents4j.core.Agent;
+
+public class ReplayAgent<S, A> implements Agent<S, A> {
+
+	private double alpha = 0.1;
+	private double gamma = 0.9;
+
+	private S keepState;
+	private A keepAction;
+	private double keepReward;
 
 	private final Random RND = new Random();
 	private final Randomizer<A> randomizer;
@@ -32,6 +41,9 @@ public class ReplayAgent<S, A> implements RLAgent<S, A> {
 
 	@Override
 	public A generateAction(S perception) {
+		if (keepState != null)
+			replay.add(0, new Experience<>(keepState, keepAction, keepReward, perception, false));
+
 		double epsilon = getEpsilon();
 		steps++;
 
@@ -39,8 +51,13 @@ public class ReplayAgent<S, A> implements RLAgent<S, A> {
 			return randomizer.randomAction();
 
 		A action = table.getBestAction(perception);
+		if (action == null)
+			action = randomizer.randomAction();
 
-		return action != null ? action : randomizer.randomAction();
+		this.keepState = perception;
+		this.keepAction = action;
+
+		return action;
 	}
 
 	private double getEpsilon() {
@@ -48,25 +65,25 @@ public class ReplayAgent<S, A> implements RLAgent<S, A> {
 	}
 
 	@Override
-	public void update(S state, A action, double reward, S next, boolean terminal) {
-		replay.add(0, new Experience<>(state, action, reward, next, terminal));
+	public void reward(double reward, boolean terminal) {
+		this.keepReward = reward;
 
-		if (replay.size() >= replayCapacity)
+		if (terminal) {
+			replay.add(0, new Experience<>(keepState, keepAction, reward, null, terminal));
 			learn();
+			this.keepState = null;
+			this.keepAction = null;
+			this.keepReward = 0;
+		}
 	}
 
 	public void learn() {
 		for (Experience<S, A> exp : replay)
-			table.update(exp.getState(), exp.getAction(), exp.getReward(), exp.getNext(), exp.isTerminal());
+			table.update(exp.getState(), exp.getAction(), exp.getReward(), exp.getNext(), exp.isTerminal(), alpha, gamma);
 
 		this.lastSequence = replay;
 
 		this.replay = new ArrayList<>(replayCapacity);
-	}
-
-	@Override
-	public void notifySuccess() {
-		learn();
 	}
 
 	public List<Experience<S, A>> getLastSequence() {
