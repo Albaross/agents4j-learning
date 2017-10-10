@@ -13,16 +13,12 @@ public class QTableExample {
 		ReplayAgent<Location2D, Direction2D> agent = new ReplayAgent<>(Direction2D::randomAction, 500);
 		GridworldSimple env = new GridworldRiver(Arrays.asList(agent));
 
-		int r = 0;
 		int sum = 0;
-		do {
+		for (int r = 0; r < 2000000; r++) {
 			env.run();
 			sum = (int) env.getCumulative(0);
 			System.out.println("Round " + r + ", Rewards " + sum + ", Ticks " + env.getCurrentTick());
-
-			r++;
-		} while (r < 2000000 && sum < 92);
-
+		}
 	}
 
 }

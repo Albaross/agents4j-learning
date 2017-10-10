@@ -64,6 +64,10 @@ public class QTable<S, A> {
 		put(state, action, weight);
 	}
 
+	public void update(Experience<S, A> exp, double alpha, double gamma) {
+		update(exp.state, exp.action, exp.reward, exp.next, exp.terminal, alpha, gamma);
+	}
+
 	public boolean containsKey(S state, A action) {
 		Map<A, Double> tmp = map.get(state);
 		return (tmp != null) ? tmp.containsKey(action) : false;

@@ -2,11 +2,11 @@ package org.albaross.agents4j.learning;
 
 public class Experience<S, A> {
 
-	private final S state;
-	private final A action;
-	private final double reward;
-	private final S next;
-	private final boolean terminal;
+	protected final S state;
+	protected final A action;
+	protected final double reward;
+	protected final S next;
+	protected final boolean terminal;
 
 	public Experience(S state, A action, double reward, S next, boolean terminal) {
 		this.state = state;
