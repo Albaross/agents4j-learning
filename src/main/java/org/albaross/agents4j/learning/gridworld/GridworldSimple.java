@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.albaross.agents4j.core.Agent;
-import org.albaross.agents4j.core.BasicEnvironment;
+import org.albaross.agents4j.learning.RLEnvironment;
 import org.albaross.agents4j.learning.utils.StateEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GridworldSimple extends BasicEnvironment<Location2D, Direction2D> implements StateEncoder<Location2D> {
+public class GridworldSimple extends RLEnvironment<Location2D, Direction2D> implements StateEncoder<Location2D> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GridworldSimple.class);
 
@@ -35,7 +35,7 @@ public class GridworldSimple extends BasicEnvironment<Location2D, Direction2D> i
 		this.goal = new Location2D(width - 1, 0);
 		this.rewards = new double[width * height];
 		Arrays.fill(this.rewards, -1);
-		reward(goal.x, goal.y, 100);
+		reward(goal.x, goal.y, 0);
 	}
 
 	protected double reward(int x, int y) {
@@ -88,11 +88,6 @@ public class GridworldSimple extends BasicEnvironment<Location2D, Direction2D> i
 	public void reboot() {
 		super.reboot();
 		Arrays.fill(currentState, start);
-	}
-
-	@Override
-	public boolean supportsRL() {
-		return true;
 	}
 
 	@Override
