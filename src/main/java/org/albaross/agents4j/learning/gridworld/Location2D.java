@@ -1,13 +1,11 @@
 package org.albaross.agents4j.learning.gridworld;
 
-import org.deeplearning4j.rl4j.space.Encodable;
-
 /**
  * 
  * @author Manuel Barbi
  *
  */
-public class Location2D implements Comparable<Location2D>, Encodable {
+public class Location2D implements Comparable<Location2D> {
 
 	protected final int x;
 	protected final int y;
@@ -62,11 +60,6 @@ public class Location2D implements Comparable<Location2D>, Encodable {
 	@Override
 	public String toString() {
 		return "(" + x + "," + y + ")";
-	}
-
-	@Override
-	public double[] toArray() {
-		return new double[] { (x + 1) / 8.0, (y + 1) / 6.0 };
 	}
 
 }

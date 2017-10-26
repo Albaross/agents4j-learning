@@ -29,11 +29,11 @@ public abstract class RLEnvironment<P, A> extends BasicEnvironment<P, A> {
 
 	protected void runSingleAgent(Agent<P, A> agent, int agentId) {
 		P perception = createPerception(agentId);
-		LOG.info("<tick {}> agent {} perceives {}", tick, agentId, perception);
-		A action = agent.generateAction(perception);
+		LOG.debug("<tick {}> agent {} perceives {}", tick, agentId, perception);
+		A action = agent.generateAction(perception, tick);
 		executeAction(agentId, action);
 		double reward = getReward(agentId);
-		LOG.info("<tick {}> agent {} executes {} and receives", tick, agentId, action, reward);
+		LOG.debug("<tick {}> agent {} executes {} and receives", tick, agentId, action, reward);
 		cumulate(agentId, reward);
 		P next = createPerception(agentId);
 		agent.update(perception, action, reward, next, terminationCriterion(agentId));

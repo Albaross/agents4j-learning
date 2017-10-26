@@ -23,7 +23,7 @@ public class QNetComponent<S, A> implements ValueComponent<S, A> {
 	protected static final Random RND = new Random();
 
 	protected QNet<S, A> net;
-	protected double gamma = 0.9;
+	protected double gamma = 0.99;
 
 	protected CircularFifoQueue<Experience<S, A>> replayStore;
 	protected int replayCapacity;
