@@ -26,13 +26,19 @@ public class QNetComponent<S, A> implements ValueComponent<S, A> {
 	protected double gamma = 0.99;
 
 	protected CircularFifoQueue<Experience<S, A>> replayStore;
-	protected int replayCapacity;
 	protected int batchSize;
 
+	public QNetComponent(QNet<S,A> net) {
+		this(net, new CircularFifoQueue<>(100000), 32);
+	}
+	
 	public QNetComponent(QNet<S, A> net, int replayCapacity, int batchSize) {
+		this(net, new CircularFifoQueue<>(replayCapacity),batchSize);
+	}
+	
+	public QNetComponent(QNet<S, A> net, CircularFifoQueue<Experience<S, A>> replayStore, int batchSize) {
 		this.net = Objects.requireNonNull(net, "net must not be null");
-		this.replayCapacity = replayCapacity;
-		this.replayStore = new CircularFifoQueue<>(replayCapacity);
+		this.replayStore = Objects.requireNonNull(replayStore, "replay store must not be null");
 		this.batchSize = batchSize;
 	}
 

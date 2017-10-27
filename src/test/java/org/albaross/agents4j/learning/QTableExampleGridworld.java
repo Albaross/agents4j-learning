@@ -11,7 +11,7 @@ import org.albaross.agents4j.learning.gridworld.GridworldSimple;
 import org.albaross.agents4j.learning.gridworld.Location2D;
 import org.albaross.agents4j.learning.operators.EpsilonGreedyOperator;
 
-public class QTableExample {
+public class QTableExampleGridworld {
 
 	public static void main(String[] args) {
 		BasicBuilder<Location2D, Direction2D> builder = new BasicBuilder<>();

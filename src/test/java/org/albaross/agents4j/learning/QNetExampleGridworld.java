@@ -21,7 +21,6 @@ import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
-import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
@@ -29,7 +28,7 @@ import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-public class QNetExample {
+public class QNetExampleGridworld {
 
 	public static final int WIDTH = 8;
 	public static final int HEIGHT = 6;
@@ -49,11 +48,11 @@ public class QNetExample {
 		MultiLayerConfiguration mlnconf = new NeuralNetConfiguration.Builder() //
 				.seed(Constants.NEURAL_NET_SEED) //
 				.iterations(1).optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT) //
-				.learningRate(0.001) //
+				.learningRate(0.01) //
 				.updater(Updater.ADAM) //
 				.weightInit(WeightInit.XAVIER) //
 				.regularization(true) //
-				.l2(0.001) //
+				.l2(0.0001) //
 				.list() //
 				.layer(0, new DenseLayer.Builder().nIn(NET_IN).nOut(16).activation(Activation.RELU).build()) //
 				.layer(1, new OutputLayer.Builder(LossFunctions.LossFunction.MSE).activation(Activation.IDENTITY).nIn(16).nOut(NET_OUT).build()) //
@@ -63,7 +62,7 @@ public class QNetExample {
 
 		MultiLayerNetwork net = new MultiLayerNetwork(mlnconf);
 		net.init();
-		net.setListeners(new StatsListener(statsStorage), new ScoreIterationListener(Constants.NEURAL_NET_ITERATION_LISTENER));
+		net.setListeners(new StatsListener(statsStorage));
 
 		EncoderLocation2D encoder = new EncoderLocation2D(WIDTH, HEIGHT);
 		BasicBuilder<Location2D, Direction2D> builder = new BasicBuilder<>();
