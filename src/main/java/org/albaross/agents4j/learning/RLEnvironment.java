@@ -1,12 +1,10 @@
 package org.albaross.agents4j.learning;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.albaross.agents4j.core.Agent;
-import org.albaross.agents4j.core.BasicEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * The environment one or more agents are located in.
@@ -14,19 +12,20 @@ import org.slf4j.LoggerFactory;
  * agents has finished respectively abandon their task.
  *
  * @author Manuel Barbi
- * 
  */
-public abstract class RLEnvironment<P, A> extends BasicEnvironment<P, A> {
+public abstract class RLEnvironment<P, A> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(RLEnvironment.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RLEnvironment.class);
 
-	protected double[] cumulative;
+    protected double[] cumulative;
 
-	public RLEnvironment(List<Agent<P, A>> agents) {
-		super(agents);
-		this.cumulative = new double[agents.size()];
-	}
+    public RLEnvironment(List<Agent<P, A>> agents) {
+        //    super(agents);
+        this.cumulative = new double[agents.size()];
+    }
 
+
+	/*
 	protected void runSingleAgent(Agent<P, A> agent, int agentId) {
 		P perception = createPerception(agentId);
 		LOG.debug("<tick {}> agent {} perceives {}", tick, agentId, perception);
@@ -53,6 +52,6 @@ public abstract class RLEnvironment<P, A> extends BasicEnvironment<P, A> {
 		this.tick = 0;
 		Arrays.fill(this.agentDisabled, false);
 		Arrays.fill(this.cumulative, 0);
-	}
+	} */
 
 }

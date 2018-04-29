@@ -65,7 +65,7 @@ public class QTable<S, A> {
 	}
 
 	public void update(Experience<S, A> exp, double alpha, double gamma) {
-		update(exp.state, exp.action, exp.reward, exp.next, exp.terminal, alpha, gamma);
+		update(exp.getState(), exp.getAction(), exp.getReward(), exp.getNext(), exp.isTerminal(), alpha, gamma);
 	}
 
 	public boolean containsKey(S state, A action) {
